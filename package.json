@@ -1,0 +1,15 @@
+{
+  "name": "hinthush",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node automation/serve.js",
+    "answer": "node automation/answer-quiz.js",
+    "package": "mkdir -p dist && cd extension && zip -qr ../dist/hinthush-$(node -p \"require('./manifest.json').version\").zip . -x '.*' -x 'icons/icon.svg' && echo Created dist/hinthush-$(node -p \"require('./manifest.json').version\").zip"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.0"
+  },
+  "version": "1.0.0",
+  "description": "HintHush Chrome extension, demo quiz and Playwright tests"
+}

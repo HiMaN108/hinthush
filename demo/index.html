@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo Quiz</title>
+  <link rel="icon" href="data:,">
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; background: #f6f7f9; color: #1d1f23; }
+    h1 { font-size: 22px; }
+    .hint { color: #666; font-size: 14px; margin-bottom: 24px; }
+    .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .question-text { font-weight: 600; margin-bottom: 10px; }
+    .options label { display: block; padding: 6px 0; cursor: pointer; }
+
+    /* Hold-to-reveal (spotlight): a blur layer sits on top of each card.
+       While the mouse is held down, a circular hole is cut in that layer
+       around the pointer, so only that circle is readable. */
+    .reveal-zone { position: relative; user-select: none; cursor: crosshair; }
+    .blur-layer {
+      --x: 50%; --y: 50%; --r: 0px;           /* --r = spotlight radius, 0 = fully blurred */
+      position: absolute; inset: 0; border-radius: inherit;
+      pointer-events: none;                    /* clicks go through to the real options */
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      mask-image: radial-gradient(circle at var(--x) var(--y), transparent 0, transparent var(--r), #000 calc(var(--r) + 10px));
+      -webkit-mask-image: radial-gradient(circle at var(--x) var(--y), transparent 0, transparent var(--r), #000 calc(var(--r) + 10px));
+    }
+    .reveal-zone .badge { position: absolute; top: 0; right: 0; font-size: 11px; color: #888; z-index: 1; transition: opacity .1s; }
+    .reveal-zone.holding .badge { opacity: 0; }
+    .figure { margin: 4px 0 10px; }
+    .fig-label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }   /* hide the label while revealing */
+
+    button[type=submit] { padding: 10px 20px; font-size: 15px; border-radius: 8px; border: 0; background: #2f5bea; color: #fff; cursor: pointer; }
+    #result { margin-top: 16px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>Demo Quiz</h1>
+  <p class="hint">Each question is blurred. Click and <b>hold</b> on a card to read it.</p>
+
+  <form id="quiz"></form>
+  <div id="result"></div>
+
+  <script>
+    const QUESTIONS = [
+      { id: 'q1', text: 'What is the capital of France?', options: ['Berlin', 'Madrid', 'Paris', 'Rome'] },
+      { id: 'q2', text: 'How many days are in a leap year?', options: ['364', '365', '366', '367'] },
+      { id: 'q3', text: 'Which planet is known as the Red Planet?', options: ['Venus', 'Mars', 'Jupiter', 'Saturn'] },
+      { id: 'q4', text: 'What is 12 × 8?', options: ['86', '96', '108', '112'] },
+      { id: 'q5', text: 'Which language runs natively in web browsers?', options: ['Python', 'Java', 'C#', 'JavaScript'] },
+      { id: 'q6', text: 'Which shape comes next in the series?', options: ['Circle', 'Square', 'Hexagon', 'Triangle'],
+        figure: `<svg width="300" height="70" viewBox="0 0 300 70" role="img" aria-label="Series figure">
+          <polygon points="35,10 60,60 10,60" fill="none" stroke="#2f5bea" stroke-width="3"/>
+          <rect x="85" y="12" width="48" height="48" fill="none" stroke="#2f5bea" stroke-width="3"/>
+          <polygon points="185,8 212,28 202,60 168,60 158,28" fill="none" stroke="#2f5bea" stroke-width="3"/>
+          <text x="250" y="48" font-size="34" fill="#2f5bea">?</text></svg>` },
+      { id: 'q7', text: 'How many squares are in the figure?', options: ['4', '5', '8', '9'],
+        figure: `<img alt="Grid figure" width="120" height="120" src="data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'><g fill=\'none\' stroke=\'%23d9480f\' stroke-width=\'3\'><rect x=\'10\' y=\'10\' width=\'100\' height=\'100\'/><line x1=\'60\' y1=\'10\' x2=\'60\' y2=\'110\'/><line x1=\'10\' y1=\'60\' x2=\'110\' y2=\'60\'/></g></svg>').replace(/%2523/g,'%23')}">` },
+    ];
+    // Answer key lives only in the page for scoring (a real app would check on a server).
+    const KEY = { q1: 'Paris', q2: '366', q3: 'Mars', q4: '96', q5: 'JavaScript', q6: 'Hexagon', q7: '5' };
+
+    const form = document.getElementById('quiz');
+    form.innerHTML = QUESTIONS.map((q, i) => `
+      <div class="card reveal-zone" data-qid="${q.id}">
+        <span class="badge">Click &amp; hold to reveal</span>
+        <div class="question-text">${i + 1}. ${q.text}</div>
+        ${q.figure ? `<div class="figure"><span class="fig-label">Click &amp; hold to reveal</span>${q.figure}</div>` : ''}
+        <div class="options">
+          ${q.options.map(o => `<label><input type="radio" name="${q.id}" value="${o}"> ${o}</label>`).join('')}
+        </div>
+        <div class="blur-layer"></div>
+      </div>`).join('') + '<button type="submit">Submit</button>';
+
+    // Spotlight behaviour: while the mouse is held, reveal a circle around the pointer.
+    const RADIUS = '70px';
+    document.querySelectorAll('.reveal-zone').forEach(zone => {
+      const layer = zone.querySelector('.blur-layer');
+      let holding = false;
+      const moveTo = e => {
+        const r = zone.getBoundingClientRect();
+        layer.style.setProperty('--x', `${e.clientX - r.left}px`);
+        layer.style.setProperty('--y', `${e.clientY - r.top}px`);
+      };
+      const hide = () => { holding = false; zone.classList.remove('holding'); layer.style.setProperty('--r', '0px'); };
+      zone.addEventListener('pointerdown', e => { holding = true; zone.classList.add('holding'); moveTo(e); layer.style.setProperty('--r', RADIUS); });
+      zone.addEventListener('pointermove', e => { if (holding) moveTo(e); });
+      zone.addEventListener('pointerup', hide);
+      zone.addEventListener('pointerleave', hide);
+      zone.addEventListener('pointercancel', hide);
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const score = QUESTIONS.filter(q => data.get(q.id) === KEY[q.id]).length;
+      document.getElementById('result').textContent = `Score: ${score} / ${QUESTIONS.length}`;
+    });
+  </script>
+</body>
+</html>

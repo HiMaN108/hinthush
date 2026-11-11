@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to HintHush</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body { padding: 40px 16px 72px; font-size: 15px; }
+    main { max-width: 720px; margin: 0 auto; }
+    .hero { display: flex; align-items: center; gap: 16px; }
+    .hero img { width: 64px; height: 64px; }
+    .hero h1 { font-size: 26px; }
+    h2 { font-size: 17px; margin: 32px 0 12px; }
+    .steps { counter-reset: s; display: grid; gap: 12px; }
+    .step { counter-increment: s; display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; }
+    .step::before {
+      content: counter(s); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--accent-soft); color: var(--accent); font-weight: 700;
+    }
+    .step .t { display: block; font-weight: 700; margin-bottom: 2px; }
+    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .feature h3 { font-size: 15px; margin-bottom: 6px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+    kbd { font: 12px ui-monospace, Menlo, monospace; padding: 1px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); }
+    code { font: 13px ui-monospace, Menlo, monospace; background: var(--surface); padding: 1px 5px; border-radius: 4px; }
+    /* mini before/after demo */
+    .demo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mini { position: relative; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; }
+    .mini .tag { position: absolute; top: 6px; right: 8px; font-size: 10px; color: var(--muted); }
+    .mini .q { font-weight: 600; margin-bottom: 6px; }
+    .mini.before .body { filter: blur(4px); }
+    .cap { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
+    details { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; background: var(--surface); }
+    details + details { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    @media (max-width: 520px) { .demo { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <img src="icons/icon128.png" alt="">
+    <div>
+      <h1>Welcome to HintHush</h1>
+      <div class="muted">Cleaner "click &amp; hold" pages, and a quick way to test your own quiz before it goes live.</div>
+    </div>
+  </div>
+
+  <h2>What it does</h2>
+  <div class="grid2">
+    <div class="card feature">
+      <h3>🏷️ Hides "Click &amp; hold" labels</h3>
+      <p>Works on every website. Hint text like "Click &amp; hold to reveal" disappears, while pictures, diagrams and answer options stay exactly where they are.</p>
+    </div>
+    <div class="card feature">
+      <h3>👁️ Reveals blurred content, for your own pages</h3>
+      <p>On pages running on your computer (<code>localhost</code>, <code>127.0.0.1</code>, <code>*.localhost</code>, <code>*.test</code>), blurred questions are shown all at once so you can check your quiz layout quickly.</p>
+    </div>
+  </div>
+
+  <h2>See the difference</h2>
+  <div class="demo">
+    <div>
+      <div class="mini before"><span class="tag">Click &amp; hold to reveal</span><div class="body"><div class="q">1. Which shape comes next?</div>△ □ ⬠ ?</div></div>
+      <div class="cap">Without HintHush, on your local test page</div>
+    </div>
+    <div>
+      <div class="mini"><div class="body"><div class="q">1. Which shape comes next?</div>△ □ ⬠ ?</div></div>
+      <div class="cap">With HintHush: label hidden, content shown</div>
+    </div>
+  </div>
+
+  <h2>Get started in 3 steps</h2>
+  <div class="steps">
+    <div class="step"><div><span class="t">Pin the extension</span>Click the puzzle-piece icon <kbd>🧩</kbd> in Chrome's toolbar, then the pin next to <b>HintHush</b>, so its icon is always visible.</div></div>
+    <div class="step"><div><span class="t">Let it run on websites</span>Go to <code>chrome://extensions</code> → <b>HintHush</b> → <b>Details</b> → <b>Site access</b> and choose <b>On all sites</b>. If you skip this, the popup shows an <b>Allow on this site</b> button you can click per site.</div></div>
+    <div class="step"><div><span class="t">Open a page and click the icon</span>The popup shows how many labels were hidden and areas revealed on that page. The number on the icon shows the same count. Use the switches to turn features on or off, or <b>Pause on this site</b> to leave a site untouched.</div></div>
+  </div>
+
+  <h2>Questions</h2>
+  <details>
+    <summary>Why is "Reveal blurred content" greyed out on most websites?</summary>
+    <p>Revealing is meant for testing your own quiz pages while you build them, so it only runs on pages served from your own computer. Live websites are left exactly as their owners designed them; only the hint labels are hidden there.</p>
+  </details>
+  <details>
+    <summary>The popup says "Chrome is blocking HintHush on this site"</summary>
+    <p>Chrome's site access for the extension is set to "On click". Press <b>Allow on this site</b> in the popup, or set site access to "On all sites" (step 2 above).</p>
+  </details>
+  <details>
+    <summary>A label isn't being hidden</summary>
+    <p>Open <a href="options.html">Settings</a> and add the label's exact wording under "Label phrases to hide". Labels drawn as images, or added only through CSS, can't be detected.</p>
+  </details>
+  <details>
+    <summary>I changed something and nothing happened</summary>
+    <p>Switches apply instantly. If you edited the extension's files, click the reload ↻ icon on HintHush in <code>chrome://extensions</code>, then refresh the page.</p>
+  </details>
+
+  <p style="margin-top:28px"><a class="btn" href="options.html">⚙️ Open settings</a></p>
+</main>
+</body>
+</html>

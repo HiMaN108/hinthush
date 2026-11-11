@@ -1,0 +1,4 @@
+node_modules/
+dist/
+automation/revealed.png
+.DS_Store

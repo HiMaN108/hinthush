@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HintHush Settings</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body { padding: 32px 16px 64px; font-size: 14px; }
+    main { max-width: 640px; margin: 0 auto; }
+    section { margin-top: 24px; }
+    h2 { font-size: 15px; margin-bottom: 4px; }
+    .desc { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    ul.list { list-style: none; margin: 0; padding: 0; }
+    ul.list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    ul.list li:last-child { border-bottom: 0; }
+    ul.list .empty { color: var(--muted); }
+    .add { display: flex; gap: 8px; margin-top: 10px; }
+    .add input { flex: 1; min-width: 0; font: inherit; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+    .x { padding: 3px 9px; }
+    #saved { transition: opacity .3s; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="row">
+    <div class="brand"><img src="icons/icon48.png" alt=""><div><div class="name">HintHush Settings</div><div class="ver">Changes save automatically</div></div></div>
+    <span class="pill ok" id="saved" style="opacity:0">Saved</span>
+  </div>
+
+  <section>
+    <h2>Features</h2>
+    <div class="card stack">
+      <div class="row">
+        <div><b>Hide "Click &amp; hold" labels</b><div class="desc" style="margin:2px 0 0">On every website. Only the label text is hidden; images and diagrams always stay visible.</div></div>
+        <label class="switch"><input type="checkbox" id="hideLabels"><span class="track"></span></label>
+      </div>
+      <div class="row">
+        <div><b>Reveal blurred content</b><div class="desc" style="margin:2px 0 0">Only on pages served from your own computer: localhost, 127.0.0.1, *.localhost and *.test.</div></div>
+        <label class="switch"><input type="checkbox" id="revealLocal"><span class="track"></span></label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Label phrases to hide</h2>
+    <div class="desc">Text matching any of these is hidden. Capital letters don't matter, and "&amp;" also matches "and".</div>
+    <div class="card" style="padding:4px 4px 10px">
+      <ul class="list" id="phrases"></ul>
+      <form class="add" id="addPhrase" style="padding:0 6px">
+        <input id="newPhrase" placeholder='e.g. "Tap & hold to see"' maxlength="80">
+        <button class="primary" type="submit">Add</button>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <h2>Paused sites</h2>
+    <div class="desc">HintHush does nothing on these sites. Pause or resume a site from the toolbar popup.</div>
+    <div class="card" style="padding:4px"><ul class="list" id="paused"></ul></div>
+  </section>
+
+  <section class="row">
+    <a href="welcome.html">❓ Open the how-to guide</a>
+    <button id="reset">Reset to defaults</button>
+  </section>
+</main>
+<script src="settings.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
